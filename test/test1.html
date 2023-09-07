@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="src/bonezegei-chart.js"></script>
+  </head>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="1200"
+      height="400"
+      style="border: 1px solid #8f8f8f"
+    >
+    </canvas>
+
+    <script>
+      var xval = [];
+      var sinVal = [];
+      var cosVal = [];
+      var tanVal = [];
+      for (var a = 0; a < 200; a++) {
+        xval[a] = a;
+        sinVal[a] = Math.sin(a) * 100;
+        cosVal[a] = Math.cos(a) * 100;
+        tanVal[a] = sinVal[a] / cosVal[a];
+      }
+
+      /*
+      const ch = new BonezegeiChart("myCanvas", {
+        color: "green",
+        backgroundColor: "white",
+        x: [0, 100, 200, 300, 400],
+        dataSet: [
+          { y: [1, 23, 450, 5, 6], color: "red" },
+          { y: [10, 75, 100, -80, 0], color: "green" },
+        ],
+      });
+      */
+      const ch = new BonezegeiChart("myCanvas", {
+        color: "green",
+        backgroundColor: "white",
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgb(255,99,132)" },
+          { y: sinVal, color: "rgb(255,206,86)" },
+          { y: tanVal, color: "blue" },
+        ],
+      });
+
+      ch.update();
+    </script>
+  </body>
+</html>

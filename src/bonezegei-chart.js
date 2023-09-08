@@ -6,14 +6,13 @@ class BonezegeiConfig {
   constructor() {
     this.type = "line"; //{line, bar, spline}
     this.backgroundColor = "white";
-    this.color = "blue";
-    this.gridColor = "red"; //grid color
-    this.gridX = 1; //grid count for x
-    this.gridY = 1; //grid count for y
-    this.labelX = [0]; //correspond to number of grid
-    this.labelY = [0]; //correspond to number of grid
+    //Grid
+    this.gridColor = "#dfdfdf"; //grid color
+    this.labelX = 6; //correspond to number of grid in X to display
+    this.labelY = 6; //correspond to number of grid in Y
+    //datasets
     this.x = [0]; // x values or label values
-    this.dataSet = [{ y: [0], color: "black" }];
+    this.dataSet = [{ y: [0], color: "black", size: 2 }]; //label y[data array] color width
   }
 }
 
@@ -28,30 +27,35 @@ class BonezegeiChart {
     this.labelFont = "12px Arial";
 
     //compute width and height
+    this.hasDecimal = 0;
     this.maxY = 0;
     this.minY = 0;
     this.yMultiplier;
     this.yMultiplierB;
     this.xMultiplier;
-    this.xCount;
-    this.yCount;
     this.xgrid = [0];
     this.ygrid = [0];
     //actual draw area of chart
-    this.ch_left = 50; //margin left
-    this.ch_top = 10; //margin top
+    this.ch_left = 0; //margin left
+    this.ch_top = 50; //margin top
     this.ch_bottom = 40; //margin bottom
     this.ch_right = 20; //margin right
     this.ch_height = 0; //chart draw area actual height
     this.ch_width = 0; //chart draw area actual width
     this.ch_color_border = "#dfdfdf";
   }
+  //==================================================================================
 
   getMinMax() {
+    //get Min and Maximum Y value
+    this.hasDecimal = 0;
     for (var a = 0; a < this.config.dataSet.length; a++) {
       for (var b = 0; b < this.config.dataSet[a].y.length; b++) {
         //var val = this.height - this.config.dataSet[a].y[b];
         var val = this.config.dataSet[a].y[b];
+        if (val % 1 != 0) {
+          this.hasDecimal = 1;
+        }
         if (this.maxY < val) {
           this.maxY = val;
         }
@@ -60,50 +64,163 @@ class BonezegeiChart {
         }
       }
     }
+    // check if grid labels are specified
+    if (this.config.labelY == 0) {
+      this.ch_height = this.height - 10;
+      this.ch_bottom = 5;
+      this.ch_top = 5;
+    }
+    //Y grid Label
     this.yMultiplier = this.ch_height / (this.maxY + Math.abs(this.minY));
+    var Yval = this.maxY - this.minY;
+    var yMul = Yval / this.config.labelY;
+    var a = 0;
+    for (a = 0; a < this.config.labelY; a++) {
+      if (this.hasDecimal) {
+        this.ygrid[a] = (yMul * a + this.minY).toFixed(2);
+      } else {
+        this.ygrid[a] = Math.ceil(yMul * a + this.minY);
+      }
+    }
+    if (this.hasDecimal) {
+      this.ygrid[a] = this.maxY.toFixed(2);
+    } else {
+      this.ygrid[a] = this.maxY;
+    }
+
+    // check if grid labels are specified
+    if (this.config.labelX != 0) {
+      this.getLeftMargin();
+    } else {
+      this.ch_left = 5;
+      this.ch_right = 5;
+    }
+
+    //update chart area width
+    this.ch_width = this.width - (this.ch_right + this.ch_left);
+    //X grid Label
     this.xMultiplier = this.ch_width / (this.config.x.length - 1);
     for (var a = 0; a < this.config.x.length; a++) {
       this.xgrid[a] = this.ch_left + a * this.xMultiplier;
     }
-
-    this.yCount = 4;
-    var Yval = this.maxY - this.minY;
-    var yMul = Yval / this.yCount;
-    var a = 0;
-    for (a = 0; a < this.yCount; a++) {
-      this.ygrid[a] = Math.ceil(yMul * a + this.minY);
-    }
-    this.ygrid[a] = Math.ceil(this.maxY);
-
-    console.log(
-      "MAX: " +
-        this.maxY +
-        " MIN: " +
-        Math.abs(this.minY) +
-        " YMult:" +
-        this.yMultiplier +
-        " XMult:" +
-        this.xMultiplier +
-        " YGrid:" +
-        this.ygrid
-    );
   }
 
   getChartArea() {
     this.ch_height = this.height - (this.ch_top + this.ch_bottom);
     this.ch_width = this.width - (this.ch_right + this.ch_left);
-    /*this.ctx.beginPath();
-    this.ctx.lineWidth = "1";
-    this.ctx.strokeStyle = this.ch_color_border;
-    this.ctx.rect(
-      this.ch_left + 0.5,
-      this.ch_top + 0.5,
-      this.ch_width,
-      this.ch_height
-    );
-    this.ctx.stroke();*/
   }
 
+  getLeftMargin() {
+    this.ch_left = 0;
+    for (var a = 0; a <= this.config.labelY; a++) {
+      this.ctx.font = this.labelFont;
+      var txt = this.ctx.measureText(this.ygrid[a]).width;
+      if (txt > this.ch_left) {
+        this.ch_left = txt;
+      }
+    }
+    this.ch_left += 15;
+  }
+  //==================================================================================
+
+  //Grid Functions
+  gridX() {
+    if (this.config.labelX > 0) {
+      var divider = this.xgrid.length / this.config.labelX;
+      var mod = Math.ceil(divider);
+      var a = 0;
+      for (a = 0; a < this.xgrid.length; a++) {
+        if (a % mod == 0) {
+          this.line1px(
+            this.xgrid[a],
+            this.ch_top,
+            this.xgrid[a],
+            this.ch_top + this.ch_height + 5,
+            this.ch_color_border
+          );
+          this.gridLabelX(
+            this.xgrid[a],
+            this.ch_top + this.ch_height + 20,
+            this.config.x[a]
+          );
+        }
+      }
+      //draw last X grid
+      this.line1px(
+        this.xgrid[a - 1],
+        this.ch_top,
+        this.xgrid[a - 1],
+        this.ch_top + this.ch_height,
+        this.ch_color_border
+      );
+    }
+  }
+
+  gridY() {
+    if (this.config.labelY > 0) {
+      var top = this.ch_height + this.ch_top;
+      var absMin = Math.abs(this.minY) * this.yMultiplier;
+      for (var a = 0; a <= this.config.labelY + 1; a++) {
+        this.line1px(
+          this.ch_left - 10,
+          top - this.ygrid[a] * this.yMultiplier - absMin,
+          this.ch_left + this.ch_width,
+          top - this.ygrid[a] * this.yMultiplier - absMin,
+          this.ch_color_border
+        );
+        this.gridLabelY(
+          top - this.ygrid[a] * this.yMultiplier - absMin + 5,
+          this.ygrid[a]
+        );
+      }
+    }
+  }
+
+  gridLabelY(y, text) {
+    var x = this.ch_left - this.ctx.measureText(text).width - 12;
+    this.label(x, y, text);
+  }
+
+  gridLabelX(x, y, text) {
+    var xa = x - this.ctx.measureText(text).width / 2;
+    this.label(xa, y, text);
+  }
+  //==================================================================================
+
+  // Basic functions
+  label(x, y, text) {
+    this.ctx.fillStyle = "#4f4f4f";
+    this.ctx.font = this.labelFont;
+    this.ctx.fillText(text, x, y);
+  }
+
+  line(x1, y1, x2, y2, color) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1, y1);
+    this.ctx.lineTo(x2, y2);
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = color;
+    this.ctx.stroke();
+  }
+
+  circle(x, y, color) {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, 2, 0, 2 * Math.PI);
+    this.ctx.fillStyle = color;
+    this.ctx.fill();
+  }
+
+  line1px(x1, y1, x2, y2, color) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1 + 0.5, y1 + 0.5);
+    this.ctx.lineTo(x2 + 0.5, y2 + 0.5);
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = color;
+    this.ctx.stroke();
+  }
+  //==================================================================================
+
+  //Draw the actual Line Chart
   drawLineChart() {
     var top = this.ch_height + this.ch_top;
     var absMin = Math.abs(this.minY) * this.yMultiplier;
@@ -116,108 +233,40 @@ class BonezegeiChart {
           top - this.config.dataSet[a].y[b + 1] * this.yMultiplier - absMin,
           this.config.dataSet[a].color
         );
-      }
-    }
-  }
-
-  gridX() {
-    for (var a = 0; a < this.xgrid.length; a++) {
-      this.line1px(
-        this.xgrid[a],
-        this.ch_top,
-        this.xgrid[a],
-        this.ch_top + this.ch_height + 5,
-        this.ch_color_border
-      );
-      this.label(
-        this.xgrid[a] - 5,
-        this.ch_top + this.ch_height + 20,
-        this.config.x[a]
-      );
-    }
-  }
-
-  gridY() {
-    var top = this.ch_height + this.ch_top;
-    var absMin = Math.abs(this.minY) * this.yMultiplier;
-    for (var a = 0; a <= this.yCount + 1; a++) {
-      this.line1px(
-        this.ch_left - 5,
-        top - this.ygrid[a] * this.yMultiplier - absMin,
-        this.ch_left + this.ch_width,
-        top - this.ygrid[a] * this.yMultiplier - absMin,
-        this.ch_color_border
-      );
-      this.label(
-        10,
-        top - this.ygrid[a] * this.yMultiplier - absMin + 6,
-        this.ygrid[a]
-      );
-    }
-  }
-
-  label(x, y, text) {
-    this.ctx.fillStyle = "black";
-    this.ctx.font = this.labelFont;
-    this.ctx.fillText(text, x, y);
-  }
-  line(x1, y1, x2, y2, color) {
-    this.ctx.beginPath();
-    this.ctx.moveTo(x1, y1);
-    this.ctx.lineTo(x2, y2);
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeStyle = color;
-    this.ctx.stroke();
-  }
-
-  line1px(x1, y1, x2, y2, color) {
-    this.ctx.beginPath();
-    this.ctx.moveTo(x1 + 0.5, y1 + 0.5);
-    this.ctx.lineTo(x2 + 0.5, y2 + 0.5);
-    this.ctx.lineWidth = 1;
-    this.ctx.strokeStyle = color;
-    this.ctx.stroke();
-  }
-
-  drawLine() {
-    for (var a = 0; a < this.config.dataSet.length; a++) {
-      for (var b = 0; b < this.config.dataSet[a].y.length; b++) {
-        this.line1px(
-          this.config.x[b],
-          this.height - this.config.dataSet[a].y[b],
-          this.config.x[b + 1],
-          this.height - this.config.dataSet[a].y[b + 1],
+        this.circle(
+          this.xgrid[b],
+          top - this.config.dataSet[a].y[b] * this.yMultiplier - absMin,
           this.config.dataSet[a].color
         );
       }
     }
-    console.log(this.config.dataSet);
+  }
+
+  //==================================================================================
+
+  getDefaultConfig() {
+    var defaultCFG = new BonezegeiConfig();
+    if (this.config.backgroundColor === undefined) {
+      this.config.backgroundColor = defaultCFG.backgroundColor;
+    }
+    if (this.config.labelX === undefined) {
+      this.config.labelX = defaultCFG.labelX;
+    }
+
+    console.log(this.config.labelY);
+    if (this.config.labelY === undefined) {
+      this.config.labelY = defaultCFG.labelY;
+    }
   }
 
   update() {
-    if (!this.config) {
-      this.config = new BonezegeiConfig();
-    }
-    console.log(
-      "W:" +
-        this.width +
-        " H:" +
-        this.height +
-        " D:" +
-        this.config.dataSet.length
-    );
-
+    this.getDefaultConfig();
     this.ctx.fillStyle = this.config.backgroundColor;
     this.ctx.fillRect(0, 0, this.width, this.height);
-
     this.getChartArea();
     this.getMinMax();
     this.gridX();
     this.gridY();
     this.drawLineChart();
-
-    //this.ctx.fillStyle = "red";
-    //this.ctx.font = this.labelFont;
-    //this.ctx.fillText("bonezegei", 10, 100);
   }
 }

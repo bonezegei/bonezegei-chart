@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="src/bonezegei-chart.js"></script>
+  </head>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="600"
+      height="400"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <canvas
+      id="myCanvas1"
+      width="100"
+      height="50"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <script>
+      var xval = [];
+      var sinVal = [];
+      var cosVal = [];
+      var tanVal = [];
+      for (var a = 0; a < 10; a++) {
+        xval[a] = "V" + a;
+        sinVal[a] = Math.sin(a) * 1;
+        cosVal[a] = Math.cos(a) * 1;
+        tanVal[a] = Math.ceil(sinVal[a] / cosVal[a]);
+      }
+
+      const ch = new BonezegeiChart("myCanvas", {
+        color: "green",
+        backgroundColor: "white",
+        labelY: 6,
+        labelX: 7,
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgb(255,99,132)" },
+          { y: sinVal, color: "rgb(255,206,86)" },
+          { y: tanVal, color: "blue" },
+        ],
+      });
+
+      ch.update();
+
+      const ch1 = new BonezegeiChart("myCanvas1", {
+        x: xval,
+        labelY: 0,
+        labelX: 0,
+        dataSet: [
+          { y: cosVal, color: "tomato" },
+          { y: sinVal, color: "black" },
+          //{ y: tanVal, color: "green" },
+        ],
+      });
+
+      ch1.update();
+    </script>
+  </body>
+</html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="src/bonezegei-chart.js"></script>
+  </head>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="600"
+      height="400"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <canvas
+      id="myCanvas1"
+      width="100"
+      height="50"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <script>
+      var xval = [];
+      var sinVal = [];
+      var cosVal = [];
+      var tanVal = [];
+      for (var a = 0; a < 10; a++) {
+        xval[a] = "V" + a;
+        sinVal[a] = Math.sin(a) * 1;
+        cosVal[a] = Math.cos(a) * 1;
+        tanVal[a] = Math.ceil(sinVal[a] / cosVal[a]);
+      }
+
+      const ch = new BonezegeiChart("myCanvas", {
+        color: "green",
+        backgroundColor: "white",
+        labelY: 6,
+        labelX: 7,
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgb(255,99,132)" },
+          { y: sinVal, color: "rgb(255,206,86)" },
+          { y: tanVal, color: "blue" },
+        ],
+      });
+
+      ch.update();
+
+      const ch1 = new BonezegeiChart("myCanvas1", {
+        x: xval,
+        labelY: 0,
+        labelX: 0,
+        dataSet: [
+          { y: cosVal, color: "tomato" },
+          { y: sinVal, color: "black" },
+          //{ y: tanVal, color: "green" },
+        ],
+      });
+
+      ch1.update();
+    </script>
+  </body>
+</html>

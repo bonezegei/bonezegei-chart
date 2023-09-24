@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Bonezegei chart</title>
+
+    <script src="src/bonezegei-chart.js"></script>
+  </head>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="600"
+      height="400"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <canvas
+      id="myCanvas1"
+      width="100"
+      height="50"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <canvas
+      id="myCanvasBar"
+      width="600"
+      height="400"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <canvas
+      id="myCanvasArea"
+      width="600"
+      height="400"
+      style="border: 1px solid #efefef; border-radius: 10px"
+    >
+    </canvas>
+
+    <script>
+      var xval = [];
+      var sinVal = [];
+      var cosVal = [];
+      var tanVal = [];
+      for (var a = 0; a < 100; a++) {
+        xval[a] = "V" + a;
+        sinVal[a] = Math.sin(a) * 1;
+        cosVal[a] = Math.cos(a) * 1;
+        tanVal[a] = Math.ceil(sinVal[a] / cosVal[a]);
+      }
+
+      const ch = new BonezegeiChart("myCanvas", {
+        type: "line",
+        color: "green",
+        backgroundColor: "white",
+        labelY: 6,
+        labelX: 7,
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgb(255,99,132)" },
+          { y: sinVal, color: "rgb(255,206,86)" },
+          { y: tanVal, color: "blue" },
+        ],
+      });
+
+      ch.update();
+
+      const ch1 = new BonezegeiChart("myCanvas1", {
+        type: "bar",
+        x: xval,
+        labelY: 0,
+        labelX: 0,
+        dataSet: [
+          { y: cosVal, color: "tomato" },
+          // { y: sinVal, color: "black" },
+          //{ y: tanVal, color: "green" },
+        ],
+      });
+
+      ch1.update();
+
+      const chBar = new BonezegeiChart("myCanvasBar", {
+        type: "bar",
+        color: "green",
+        backgroundColor: "white",
+        labelY: 6,
+        labelX: 10,
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgb(255,99,132)" },
+          //{ y: sinVal, color: "rgb(255,206,86)" },
+          //{ y: tanVal, color: "blue" },
+        ],
+      });
+
+      chBar.update();
+
+      const chArea = new BonezegeiChart("myCanvasArea", {
+        type: "area",
+        color: "green",
+        backgroundColor: "white",
+        labelY: 6,
+        labelX: 10,
+        x: xval,
+        dataSet: [
+          { y: cosVal, color: "rgba(255,99,132,0.8)" },
+          { y: sinVal, color: "rgba(255,206,86,0.8)" },
+          //{ y: tanVal, color: "blue" },
+        ],
+      });
+
+      chArea.update();
+    </script>
+  </body>
+</html>

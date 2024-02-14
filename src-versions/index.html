@@ -17,37 +17,6 @@
     >
     </canvas>
 
-    <canvas
-      id="myCanvas1"
-      width="100"
-      height="50"
-      style="border: 1px solid #efefef; border-radius: 10px"
-    >
-    </canvas>
-
-    <canvas
-      id="myCanvasBar"
-      width="600"
-      height="400"
-      style="border: 1px solid #efefef; border-radius: 10px"
-    >
-    </canvas>
-
-    <canvas
-      id="myCanvasArea"
-      width="600"
-      height="400"
-      style="border: 1px solid #efefef; border-radius: 10px"
-    >
-    </canvas>
-
-    <canvas
-      id="myCanvasArea1"
-      width="100"
-      height="50"
-      style="border: 1px solid #efefef; border-radius: 10px"
-    >
-    </canvas>
 
     <script>
       var xval = [];
@@ -77,65 +46,7 @@
 
       ch.update();
 
-      const ch1 = new BonezegeiChart("myCanvas1", {
-        type: "bar",
-        x: xval,
-        labelY: 0,
-        labelX: 0,
-        dataSet: [
-          { y: cosVal, color: "tomato" },
-          // { y: sinVal, color: "black" },
-          //{ y: tanVal, color: "green" },
-        ],
-      });
 
-      ch1.update();
-
-      const chBar = new BonezegeiChart("myCanvasBar", {
-        type: "bar",
-        color: "green",
-        backgroundColor: "white",
-        labelY: 6,
-        labelX: 10,
-        x: xval,
-        dataSet: [
-          { y: cosVal, color: "rgb(255,99,132)" },
-          { y: sinVal, color: "rgb(255,206,86)" },
-          //{ y: tanVal, color: "blue" },
-        ],
-      });
-
-      chBar.update();
-
-      const chArea = new BonezegeiChart("myCanvasArea", {
-        type: "area",
-        color: "green",
-        backgroundColor: "white",
-        labelY: 6,
-        labelX: 10,
-        x: xval,
-        dataSet: [
-          { y: cosVal, color: "rgba(255,99,132,0.8)" },
-          { y: sinVal, color: "rgba(255,206,86,0.8)" },
-          //{ y: tanVal, color: "blue" },
-        ],
-      });
-      chArea.update();
-
-      const chArea1 = new BonezegeiChart("myCanvasArea1", {
-        type: "area",
-        color: "green",
-        backgroundColor: "white",
-        labelY: 0,
-        labelX: 0,
-        x: xval,
-        dataSet: [
-          { y: cosVal, color: "rgba(255,99,132,0.8)" },
-          //{ y: sinVal, color: "rgba(255,206,86,0.8)" },
-          //{ y: tanVal, color: "blue" },
-        ],
-      });
-      chArea1.update();
     </script>
   </body>
 </html>
